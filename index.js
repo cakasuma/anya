@@ -7,6 +7,7 @@ const sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_
     dialect: 'postgres'
 })
 
+// Membuat model (table) food
 const Food = sequelize.define('Food', {
     id_makanan: {
         type: DataTypes.INTEGER,
@@ -18,6 +19,7 @@ const Food = sequelize.define('Food', {
     }
 })
 
+// Membuat model (table) user
 const Users = sequelize.define('Users', {
     id_user: {
         type: DataTypes.INTEGER,
