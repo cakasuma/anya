@@ -9,9 +9,10 @@ const sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_
 
 // Membuat model (table) food
 const Food = sequelize.define('Food', {
-    id_makanan: {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
     rasa: {
         type: DataTypes.STRING,
@@ -21,29 +22,37 @@ const Food = sequelize.define('Food', {
 
 // Membuat model (table) user
 const Users = sequelize.define('Users', {
-    id_user: {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
     nama: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    id_makanan: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    }
 })
 
-sequelize.sync()
+// Food to user has a relationship of 1:N relationship
+Food.hasMany(Users, {
+    foreignKey: 'id_makanan',
+});
+// User to food has a relationship of 1:1 relationship
+Users.belongsTo(Food, {
+    foreignKey: 'id_makanan',
+});
+
+// Membuat table di database jika tidak ada
+sequelize.sync({ force: true }) // tambah force: true untuk menghapus table yang sudah ada
 
 const app = express()
 
+// API endpoint untuk homepage
 app.get('', (req, res) => {
     res.send('Welcome')
 })
 
-// test connection database
+// API endpoint untuk test connection database
 app.get('/test-connection', async (req, res) => {
     try {
         await sequelize.authenticate()
@@ -54,11 +63,10 @@ app.get('/test-connection', async (req, res) => {
     res.send('Hello express')
 })
 
-// contoh menambah data di table food
+// API endpoint untuk contoh menambah data di table food
 app.post('/food', async (req, res) => {
     try {
         await Food.create({
-            id_makanan: 1,
             rasa: 'Pedas',
         })
         res.send('Food created')
@@ -67,13 +75,12 @@ app.post('/food', async (req, res) => {
     }
 })
 
-// contoh menambah data di table user
+// API endpoint untuk contoh menambah data di table user
 app.post('/user', async (req, res) => {
     try {
         await Users.create({
-            id_user: 1,
             nama: 'Rizky',
-            id_makanan: 1
+            id_makanan: 1,
         })
         res.send('User created')
     } catch (e) {
@@ -82,21 +89,27 @@ app.post('/user', async (req, res) => {
     }
 })
 
-// contoh mengambil data di table user tapi gabung dengan table food
+// API endpoint untuk contoh mengambil data di table user tapi gabung dengan table food
 app.get('/user-food', async (req, res) => {
     try {
-        // cara untuk join table
-        const [results] = await sequelize.query(`
-            SELECT u.nama, f.rasa
-            FROM "Users" u
-            JOIN "Food" f
-            ON u.id_makanan = f.id_makanan
-        `)
+        // cara untuk join table menggunakan raw query
+        // const [results] = await sequelize.query(`
+        //     SELECT u.nama, f.rasa
+        //     FROM "Users" u
+        //     JOIN "Food" f
+        //     ON u.id_makanan = f.id
+        // `)
+        // cara untuk join table menggunakan sequelize include
+        const results = await Users.findAll({
+            include: Food
+        })
         res.send(results)
     } catch (e) {
         console.error(e)
     }
 })
+
+
 
 app.listen(3000, () => {
     console.log('Server is up on port 3000.')
