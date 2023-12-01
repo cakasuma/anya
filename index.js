@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_USER, process.env.DATABASE_PASSWORD, {
     host: process.env.DATABASE_HOST,
-    dialect: 'postgres'
+    dialect: 'mysql'
 })
 
 // Membuat model (table) food
@@ -43,7 +43,7 @@ Users.belongsTo(Food, {
 });
 
 // Membuat table di database jika tidak ada
-sequelize.sync({ force: true }) // tambah force: true untuk menghapus table yang sudah ada
+sequelize.sync({ alter: true }) // tambah force: true untuk menghapus table yang sudah ada
 
 const app = express()
 
@@ -78,6 +78,9 @@ app.post('/food', async (req, res) => {
 // API endpoint untuk contoh menambah data di table user
 app.post('/user', async (req, res) => {
     try {
+        // await sequelize.query(`
+        //     INSERT INTO Users (nama, id_makanan) VALUES ('Zaki', 1)
+        // `)
         await Users.create({
             nama: 'Rizky',
             id_makanan: 1,
@@ -94,14 +97,14 @@ app.get('/user-food', async (req, res) => {
     try {
         // cara untuk join table menggunakan raw query
         // const [results] = await sequelize.query(`
-        //     SELECT u.nama, f.rasa
+        //     SELECT *
         //     FROM "Users" u
         //     JOIN "Food" f
         //     ON u.id_makanan = f.id
         // `)
         // cara untuk join table menggunakan sequelize include
         const results = await Users.findAll({
-            include: Food
+            include: Food,
         })
         res.send(results)
     } catch (e) {
