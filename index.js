@@ -45,7 +45,7 @@ Users.belongsTo(Food, {
 });
 
 // Membuat table di database jika tidak ada
-sequelize.sync({ force: true }) // tambah force: true untuk menghapus table yang sudah ada
+sequelize.sync({ alter: true }) // tambah force: true untuk menghapus table yang sudah ada
 
 const app = express()
 
