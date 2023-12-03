@@ -1,5 +1,7 @@
 const express = require('express')
 const { Sequelize, DataTypes } = require('sequelize')
+// import cors
+const cors = require('cors')
 require('dotenv').config()
 
 const sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_USER, process.env.DATABASE_PASSWORD, {
@@ -47,6 +49,8 @@ sequelize.sync({ force: true }) // tambah force: true untuk menghapus table yang
 
 const app = express()
 
+app.use(cors())
+
 // API endpoint untuk homepage
 app.get('', (req, res) => {
     res.send('Welcome')
@@ -79,7 +83,7 @@ app.post('/food', async (req, res) => {
 app.post('/user', async (req, res) => {
     try {
         await Users.create({
-            nama: 'Rizky',
+            nama: 'Daffa',
             id_makanan: 1,
         })
         res.send('User created')
@@ -108,8 +112,6 @@ app.get('/user-food', async (req, res) => {
         console.error(e)
     }
 })
-
-
 
 app.listen(3000, () => {
     console.log('Server is up on port 3000.')
