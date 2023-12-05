@@ -49,7 +49,49 @@ Users.belongsTo(Food, {
 });
 
 // Membuat table di database jika tidak ada
-sequelize.sync({ force: true }) // tambah force: true untuk menghapus table yang sudah ada
+sequelize.sync({ force: true }).then(async () => {
+    console.log('Tables created')
+
+    await sequelize.authenticate()
+        console.log('Connection has been established successfully.')
+
+    await Food.bulkCreate([
+        {
+            rasa: 'Pedas'
+        },
+        {
+            rasa: 'Manis'
+        },
+        {
+            rasa: 'Asin'
+        },
+        {
+            rasa: 'Pahit'
+        },
+        {
+            rasa: 'Asam'
+        }
+    ])
+
+    await Users.bulkCreate([
+        {
+            nama: 'Amira',
+            id_makanan: 1,
+            profile_picture: '/amira.png'
+        },
+        {
+            nama: 'Retno',
+            id_makanan: 2,
+            profile_picture: '/retno.jpeg'
+        },
+        {
+            nama: 'Nadiyatul Jenni',
+            id_makanan: 2,
+            profile_picture: '/nadiya.jpeg'
+        }
+    ])
+
+}) // tambah force: true untuk menghapus table yang sudah ada
 
 const app = express()
 
