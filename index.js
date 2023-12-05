@@ -1,6 +1,5 @@
 const express = require('express')
 const { Sequelize, DataTypes } = require('sequelize')
-// import cors
 const cors = require('cors')
 require('dotenv').config()
 
@@ -20,7 +19,7 @@ const Food = sequelize.define('Food', {
     rasa: {
         type: DataTypes.STRING,
         allowNull: false,
-    }
+    },
 })
 
 // Membuat model (table) user
@@ -34,6 +33,10 @@ const Users = sequelize.define('Users', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    profile_picture: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    }
 })
 
 // Food to user has a relationship of 1:N relationship
@@ -51,6 +54,8 @@ sequelize.sync({ alter: true }) // tambah force: true untuk menghapus table yang
 const app = express()
 
 app.use(cors())
+
+app.use(express.static('images'))
 
 // API endpoint untuk homepage
 app.get('', (req, res) => {
@@ -71,9 +76,23 @@ app.get('/test-connection', async (req, res) => {
 // API endpoint untuk contoh menambah data di table food
 app.post('/food', async (req, res) => {
     try {
-        await Food.create({
-            rasa: 'Pedas',
-        })
+        await Food.bulkCreate([
+            {
+                rasa: 'Pedas'
+            },
+            {
+                rasa: 'Manis'
+            },
+            {
+                rasa: 'Asin'
+            },
+            {
+                rasa: 'Pahit'
+            },
+            {
+                rasa: 'Asam'
+            }
+        ])
         res.send('Food created')
     } catch (e) {
         console.error(e)
@@ -86,10 +105,23 @@ app.post('/user', async (req, res) => {
         // await sequelize.query(`
         //     INSERT INTO Users (nama, id_makanan) VALUES ('Zaki', 1)
         // `)
-        await Users.create({
-            nama: 'Daffa',
-            id_makanan: 1,
-        })
+        await Users.bulkCreate([
+            {
+                nama: 'Amira',
+                id_makanan: 1,
+                profile_picture: '/amira.png'
+            },
+            {
+                nama: 'Retno',
+                id_makanan: 2,
+                profile_picture: '/retno.jpeg'
+            },
+            {
+                nama: 'Nadiyatul Jenni',
+                id_makanan: 2,
+                profile_picture: '/nadiya.jpeg'
+            }
+        ])
         res.send('User created')
     } catch (e) {
         console.error(e)
