@@ -53,7 +53,7 @@ sequelize.sync({ force: true }).then(async () => {
     console.log('Tables created')
 
     await sequelize.authenticate()
-        console.log('Connection has been established successfully.')
+    console.log('Connection has been established successfully.')
 
     await Food.bulkCreate([
         {
@@ -90,6 +90,7 @@ sequelize.sync({ force: true }).then(async () => {
             profile_picture: '/nadiya.jpeg'
         }
     ])
+    console.log('Data created')
 
 }) // tambah force: true untuk menghapus table yang sudah ada
 
